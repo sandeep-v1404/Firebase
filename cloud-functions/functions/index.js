@@ -106,34 +106,22 @@ exports.upvote = functions.https.onCall(async(data, context) => {
     });
 });
 
-
-
-
-//     return new Promise((resolve, reject) => {
-//         user.get().then(doc => {
-//             //Check user hasn't already upvoted the requests
-//             if (doc.data().upvotedOn.includes(data.id)) {
-//                 throw new functions.https.HttpsError(
-//                     'failed-precondition',
-//                     'You can only upvote something once'
-//                 );
-//             }
-//             return new Promise((resolve, reject) => {
-//                 user.update({
-//                         upvotedOn: [...doc.data().upvotedOn, data.id]
-//                     })
-//                     .then(() => {
-//                         return new Promise((resolve, reject) => {
-//                             request.update({
-//                                 upvotes: admin.firestore.FieldValue.increment(1)
-//                             });
-//                         })
-//                     }).catch((e) => {
-//                         return reject(e);
-//                     });
-//             });
-//         }).catch((err) => {
-//             return reject(err);
-//         });
-//     });
-// });
+//FireStore Trigger
+exports.logActivities = functions.firestore.document('/{collection}/{id}')
+    .onCreate((snap, context) => {
+        console.log(snap.data());
+        const collection = context.params.collection;
+        const id = context.params.id;
+        const activities = admin.firestore().collection('activities');
+        if (collection === 'requests') {
+            return activities.add({
+                text: 'A new Tutorial Request was Added'
+            });
+        }
+        if (collection === 'users') {
+            return activities.add({
+                text: 'A new User SignedUp'
+            });
+        }
+        return null;
+    });

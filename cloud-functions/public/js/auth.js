@@ -33,7 +33,6 @@ loginForm.addEventListener("submit", (e) => {
     const email = loginForm["email"].value;
     const password = loginForm["password"].value;
     auth.signInWithEmailAndPassword(email, password).then((user) => {
-        console.log("User Signed In", user);
         loginForm.reset();
     }).catch((err) => {
         loginForm.querySelector('.error').textContent = err.message;
